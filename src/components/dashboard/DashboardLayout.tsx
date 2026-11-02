@@ -1,8 +1,9 @@
 import { Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Activity, BarChart3, ClipboardList, Database, FlaskConical, GitCompare, LayoutGrid, Menu, Settings, ShieldCheck, X } from 'lucide-react';
+import { Activity, BarChart3, ClipboardList, Database, FlaskConical, GitCompare, LayoutGrid, Lock, Menu, Settings, ShieldCheck, X } from 'lucide-react';
 import { Logo, cx } from '@/components/ui';
-import { FACILITY, memberById } from '@/data/facility';
+import { FACILITY, memberById, team } from '@/data/facility';
+import { ROLE_LABEL, roleOf } from '@/lib/access';
 import { formatDateTime } from '@/lib/format';
 import { useWorkspace } from '@/state/store';
 import { useDocumentMeta } from '@/hooks/useDocumentMeta';
@@ -15,6 +16,7 @@ const NAV = [
   { to: '/batches/compare', label: 'Comparisons', icon: GitCompare },
   { to: '/batches/investigations', label: 'Investigations', icon: ClipboardList },
   { to: '/batches/data-quality', label: 'Data Quality', icon: ShieldCheck },
+  { to: '/batches/audit', label: 'Audit & roles', icon: Lock },
   { to: '/batches/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -22,7 +24,7 @@ export function DashboardLayout() {
   useDocumentMeta({ title: 'Batch Dashboard (demo)', path: '/batches', noindex: true });
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
-  const { investigations, settings } = useWorkspace();
+  const { investigations, settings, updateSettings } = useWorkspace();
   const openCount = investigations.filter((i) => i.status !== 'resolved').length;
   const me = memberById(settings.currentUserId);
   useEffect(() => setOpen(false), [pathname]);
@@ -67,12 +69,24 @@ export function DashboardLayout() {
           All batches, measurements and people are fictional. Snapshot {formatDateTime(FACILITY.snapshotAt)}.
         </div>
         {me && (
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-mint-300 text-xs font-semibold text-forest-950">{me.initials}</span>
-            <div className="min-w-0 text-[12px] leading-tight">
-              <div className="truncate text-paper">{me.name}</div>
-              <div className="truncate text-paper/50">{me.role}</div>
-            </div>
+          <div>
+            <label htmlFor="demo-as" className="mb-1.5 flex items-center gap-2 text-[10px] tracking-wider text-paper/45 uppercase">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-mint-300 text-[9px] font-semibold text-forest-950" aria-hidden>{me.initials}</span>
+              Demo as
+            </label>
+            <select
+              id="demo-as"
+              aria-label="Demo as user"
+              className="w-full rounded-md border border-white/15 bg-forest-900 px-2 py-1.5 text-[12px] text-paper focus:border-mint-300 focus:outline-none"
+              value={settings.currentUserId}
+              onChange={(e) => updateSettings({ currentUserId: e.target.value })}
+            >
+              {team.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name} · {ROLE_LABEL[roleOf(m.id)]}
+                </option>
+              ))}
+            </select>
           </div>
         )}
       </div>

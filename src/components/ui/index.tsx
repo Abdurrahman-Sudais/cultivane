@@ -195,7 +195,7 @@ export function BatchLink({ id, className }: { id: string; className?: string })
   );
 }
 
-export function SegmentedControl<T extends string>({ value, onChange, options, label, size = 'md' }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[]; label: string; size?: 'sm' | 'md' }) {
+export function SegmentedControl<T extends string>({ value, onChange, options, label, size = 'md', disabled = false }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[]; label: string; size?: 'sm' | 'md'; disabled?: boolean }) {
   return (
     <div role="radiogroup" aria-label={label} className="inline-flex rounded-md border border-line bg-paper-2 p-0.5">
       {options.map((o) => (
@@ -204,9 +204,10 @@ export function SegmentedControl<T extends string>({ value, onChange, options, l
           type="button"
           role="radio"
           aria-checked={value === o.value}
+          disabled={disabled}
           onClick={() => onChange(o.value)}
           className={cx(
-            'rounded-[5px] font-medium transition-colors',
+            'rounded-[5px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60',
             size === 'sm' ? 'px-2.5 py-1 text-[11px]' : 'px-3 py-1.5 text-xs',
             value === o.value ? 'bg-white text-forest-800 shadow-sm ring-1 ring-line' : 'text-navy-500 hover:text-navy-800',
           )}
@@ -215,5 +216,15 @@ export function SegmentedControl<T extends string>({ value, onChange, options, l
         </button>
       ))}
     </div>
+  );
+}
+
+/** Explains why controls are read-only for the acting demo user. */
+export function RoleNote({ children }: { children: ReactNode }) {
+  return (
+    <p className="flex items-start gap-1.5 rounded-md bg-paper-2 px-3 py-2 text-[11.5px] text-navy-600" role="note">
+      <span aria-hidden>🔒</span>
+      <span>{children}</span>
+    </p>
   );
 }

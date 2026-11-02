@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://cultivane.site/</loc></url>
-  <url><loc>https://cultivane.site/product</loc></url>
-  <url><loc>https://cultivane.site/batch-monitoring</loc></url>
-  <url><loc>https://cultivane.site/process-analytics</loc></url>
-  <url><loc>https://cultivane.site/how-it-works</loc></url>
-  <url><loc>https://cultivane.site/pricing</loc></url>
-  <url><loc>https://cultivane.site/about</loc></url>
-  <url><loc>https://cultivane.site/contact</loc></url>
+  <url><loc>https://cultivane.site/</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/product</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/batch-monitoring</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/process-analytics</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/how-it-works</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/pricing</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/about</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/contact</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/technology</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/security</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/privacy</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://cultivane.site/terms</loc><lastmod>2026-11-02</lastmod></url>
 </urlset>
