@@ -10,14 +10,15 @@ import { missingInWindow, seriesCompleteness } from '@/lib/dataQuality';
 import { pointsInWindow } from '@/lib/batch';
 import { INVESTIGATION_STATUS_LABEL, MEASUREMENTS, MEASUREMENT_KINDS, MISSING_REASON_LABEL, formatDateTime, formatValue } from '@/lib/format';
 import { useWorkspace } from '@/state/store';
-import { BatchLink, Callout, ComparabilityBadge, EmptyState, InvestigationStatusBadge, PageHeader, Panel, SegmentedControl, cx } from '@/components/ui';
+import { BatchLink, Callout, ComparabilityBadge, EmptyState, InvestigationStatusBadge, PageHeader, Panel, RoleNote, SegmentedControl, cx } from '@/components/ui';
+import { ROLE_LABEL } from '@/lib/access';
 import { MeasurementPanel } from '@/components/dashboard/MeasurementPanel';
 
 const NOTE_MAX = 2000;
 
 export default function InvestigationDetail() {
   const { investigationId = '' } = useParams();
-  const { investigations, settings, setStatus, assign, addNote, setReferences } = useWorkspace();
+  const { investigations, settings, setStatus, assign, addNote, setReferences, can, role } = useWorkspace();
   const inv = investigations.find((i) => i.id === investigationId);
   const [note, setNote] = useState('');
   const [noteError, setNoteError] = useState<string | null>(null);
@@ -142,7 +143,7 @@ export default function InvestigationDetail() {
             </Panel>
           </div>
 
-          <Panel title="Reference runs used for comparison" actions={<button type="button" className="text-xs font-medium text-forest-700 hover:underline" onClick={() => setEditRefs((v) => !v)} aria-expanded={editRefs}>{editRefs ? 'Done' : 'Edit references'}</button>} bodyClassName="p-0">
+          <Panel title="Reference runs used for comparison" actions={<button type="button" className="text-xs font-medium text-forest-700 hover:underline" onClick={() => setEditRefs((v) => !v)} aria-expanded={editRefs} disabled={!can('references')} title={can('references') ? undefined : 'Your role cannot edit reference runs'}>{editRefs ? 'Done' : 'Edit references'}</button>} bodyClassName="p-0">
             <ul className="divide-y divide-line">
               {(editRefs ? candidates : refs).map((r) => {
                 const a = assessComparability(batch, r, { phaseId: inv.phaseId, measurement: inv.measurement, window: inv.window }, settings);
@@ -197,13 +198,14 @@ export default function InvestigationDetail() {
 
           <Panel title="Workflow">
             <div className="space-y-4">
+              {(!can('status') || !can('assign')) && <RoleNote>Acting as {ROLE_LABEL[role].toLowerCase()}: status and assignment are read-only. Switch user in the header to try another role.</RoleNote>}
               <div>
                 <span className="label">Status</span>
-                <SegmentedControl<InvestigationStatus> label="Investigation status" value={inv.status} onChange={(s) => setStatus(inv.id, s)} options={(Object.keys(INVESTIGATION_STATUS_LABEL) as InvestigationStatus[]).map((s) => ({ value: s, label: INVESTIGATION_STATUS_LABEL[s] }))} />
+                <SegmentedControl<InvestigationStatus> label="Investigation status" value={inv.status} disabled={!can('status')} onChange={(s) => setStatus(inv.id, s)} options={(Object.keys(INVESTIGATION_STATUS_LABEL) as InvestigationStatus[]).map((s) => ({ value: s, label: INVESTIGATION_STATUS_LABEL[s] }))} />
               </div>
               <div>
                 <label htmlFor="assignee" className="label">Assigned to</label>
-                <select id="assignee" className="input" value={inv.assigneeId ?? ''} onChange={(e) => assign(inv.id, e.target.value || null)}>
+                <select id="assignee" className="input disabled:cursor-not-allowed disabled:opacity-60" disabled={!can('assign')} value={inv.assigneeId ?? ''} onChange={(e) => assign(inv.id, e.target.value || null)}>
                   <option value="">Unassigned</option>
                   {team.map((m) => <option key={m.id} value={m.id}>{m.name} — {m.role}</option>)}
                 </select>
@@ -222,6 +224,9 @@ export default function InvestigationDetail() {
               ))}
               {!inv.notes.length && <li className="text-sm text-navy-500">No notes yet.</li>}
             </ul>
+            {!can('note') ? (
+              <RoleNote>Acting as {ROLE_LABEL[role].toLowerCase()}: you can read notes but not add them.</RoleNote>
+            ) : (
             <form onSubmit={submitNote} noValidate>
               <label htmlFor="note" className="label">Add a note as {memberById(settings.currentUserId)?.name}</label>
               <textarea id="note" className="input min-h-24" value={note} onChange={(e) => { setNote(e.target.value); if (noteError) setNoteError(null); }} aria-invalid={noteError ? true : undefined} aria-describedby={noteError ? 'note-err' : undefined} placeholder="Record observations, checks performed and findings…" />
@@ -231,6 +236,7 @@ export default function InvestigationDetail() {
               </div>
               <button type="submit" className="btn-primary btn-sm mt-2">Add note</button>
             </form>
+            )}
           </Panel>
 
           <Panel title="History">

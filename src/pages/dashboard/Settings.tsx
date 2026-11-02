@@ -2,10 +2,12 @@ import { useState } from 'react';
 import type { AlignmentMode } from '@/types';
 import { team } from '@/data/facility';
 import { DEFAULT_SETTINGS, useWorkspace } from '@/state/store';
-import { Callout, PageHeader, Panel, SegmentedControl } from '@/components/ui';
+import { Callout, PageHeader, Panel, RoleNote, SegmentedControl } from '@/components/ui';
+import { ROLE_LABEL, roleOf } from '@/lib/access';
 
 export default function SettingsPage() {
-  const { settings, updateSettings, resetDemo } = useWorkspace();
+  const { settings, updateSettings, resetDemo, can, role } = useWorkspace();
+  const locked = !can('settings');
   const [confirming, setConfirming] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -16,12 +18,13 @@ export default function SettingsPage() {
         <Panel title="Current user">
           <label htmlFor="user" className="label">Acting as</label>
           <select id="user" className="input max-w-sm" value={settings.currentUserId} onChange={(e) => updateSettings({ currentUserId: e.target.value })}>
-            {team.map((m) => <option key={m.id} value={m.id}>{m.name} — {m.role}</option>)}
+            {team.map((m) => <option key={m.id} value={m.id}>{m.name} — {m.role} ({ROLE_LABEL[roleOf(m.id)].toLowerCase()})</option>)}
           </select>
           <p className="mt-2 text-xs text-navy-500">Demo only: there is no authentication. Notes and status changes are attributed to this user.</p>
         </Panel>
         <Panel title="Comparison & screening">
-          <div className="space-y-5">
+          <fieldset className="space-y-5 disabled:opacity-70" disabled={locked}>
+            {locked && <RoleNote>Acting as {ROLE_LABEL[role].toLowerCase()}: only a production manager can change screening thresholds.</RoleNote>}
             <div>
               <label htmlFor="sens" className="label">Pattern screening band width: <span className="data">{settings.deviationSensitivity.toFixed(1)}×</span></label>
               <input id="sens" type="range" min={0.6} max={2} step={0.1} value={settings.deviationSensitivity} onChange={(e) => updateSettings({ deviationSensitivity: Number(e.target.value) })} className="w-full max-w-sm accent-forest-700" />
@@ -37,10 +40,10 @@ export default function SettingsPage() {
             </div>
             <div>
               <span className="label">Default alignment</span>
-              <SegmentedControl<AlignmentMode> label="Default alignment" value={settings.defaultAlignment} onChange={(v) => updateSettings({ defaultAlignment: v })} options={[{ value: 'phase', label: 'Phase start' }, { value: 'elapsed', label: 'Elapsed time' }]} />
+              <SegmentedControl<AlignmentMode> label="Default alignment" disabled={locked} value={settings.defaultAlignment} onChange={(v) => updateSettings({ defaultAlignment: v })} options={[{ value: 'phase', label: 'Phase start' }, { value: 'elapsed', label: 'Elapsed time' }]} />
             </div>
             <button type="button" className="btn-ghost btn-sm" onClick={() => updateSettings({ ...DEFAULT_SETTINGS, currentUserId: settings.currentUserId })}>Restore default thresholds</button>
-          </div>
+          </fieldset>
         </Panel>
         <Panel title="Demo data">
           <p className="mb-3 text-sm text-navy-600">Reset investigations, notes, assignments and settings to the original simulated dataset.</p>

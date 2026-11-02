@@ -13,6 +13,9 @@ const Pricing = lazy(() => import('@/pages/marketing/Pricing'));
 const About = lazy(() => import('@/pages/marketing/About'));
 const Contact = lazy(() => import('@/pages/marketing/Contact'));
 const NotFound = lazy(() => import('@/pages/marketing/NotFound'));
+const Technology = lazy(() => import('@/pages/marketing/Technology'));
+const Security = lazy(() => import('@/pages/marketing/Security'));
+const Legal = lazy(() => import('@/pages/marketing/Legal'));
 
 const Overview = lazy(() => import('@/pages/dashboard/Overview'));
 const BatchList = lazy(() => import('@/pages/dashboard/BatchList'));
@@ -24,6 +27,7 @@ const Investigations = lazy(() => import('@/pages/dashboard/Investigations'));
 const InvestigationDetail = lazy(() => import('@/pages/dashboard/InvestigationDetail'));
 const DataQuality = lazy(() => import('@/pages/dashboard/DataQuality'));
 const SettingsPage = lazy(() => import('@/pages/dashboard/Settings'));
+const Audit = lazy(() => import('@/pages/dashboard/Audit'));
 
 function Loading() {
   return (
@@ -48,6 +52,10 @@ export default function App() {
               <Route path="pricing" element={<Pricing />} />
               <Route path="about" element={<About />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="technology" element={<Technology />} />
+              <Route path="security" element={<Security />} />
+              <Route path="privacy" element={<Legal kind="privacy" />} />
+              <Route path="terms" element={<Legal kind="terms" />} />
               <Route path="*" element={<NotFound />} />
             </Route>
             <Route path="batches" element={<DashboardLayout />}>
@@ -60,6 +68,7 @@ export default function App() {
               <Route path="investigations" element={<Investigations />} />
               <Route path="investigations/:investigationId" element={<InvestigationDetail />} />
               <Route path="data-quality" element={<DataQuality />} />
+              <Route path="audit" element={<Audit />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFound />} />
             </Route>

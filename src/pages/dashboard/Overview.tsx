@@ -8,6 +8,7 @@ import { sparkline } from '@/lib/chart';
 import { allMissingIntervals, batchCompleteness, staleMeasurements } from '@/lib/dataQuality';
 import { MEASUREMENTS, MEASUREMENT_KINDS, formatValue, relativeTime } from '@/lib/format';
 import { useWorkspace } from '@/state/store';
+import { AssistantPanel } from '@/components/dashboard/AssistantPanel';
 import { BatchLink, BatchStatusBadge, Callout, InvestigationStatusBadge, Meter, PageHeader, Panel, PhaseTimeline, Stat } from '@/components/ui';
 
 export default function Overview() {
@@ -37,6 +38,9 @@ export default function Overview() {
         <Stat label="Open investigations" value={open.length} hint={`${open.filter((i) => !i.assigneeId).length} unassigned`} icon={<ClipboardList className="h-4 w-4 text-ochre-500" aria-hidden />} />
         <Stat label="Missing intervals (active)" value={gaps.length} hint="Sensor gaps in running batches" icon={<AlertTriangle className="h-4 w-4 text-ochre-500" aria-hidden />} />
         <Stat label="Outdated feeds" value={stale.length} hint={`No reading for > ${settings.stalenessThresholdHours} h`} icon={<ShieldCheck className="h-4 w-4 text-teal-500" aria-hidden />} />
+      </div>
+      <div className="mb-6">
+        <AssistantPanel />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">

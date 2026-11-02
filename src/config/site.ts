@@ -9,13 +9,42 @@ export const site = {
     'Cultivane helps fermentation teams compare batches at corresponding process phases, identify unusual measurement patterns, review missing data, and organise process investigations.',
 } as const;
 
+export interface Person {
+  name: string;
+  initials: string;
+  role: string;
+  email?: string;
+  bio: string;
+  focus: string[];
+}
+
+/** The founding team, credited on the home page, About, Contact and in the footer. */
+export const FOUNDERS: Person[] = [
+  {
+    name: 'Mariam Suleiman',
+    initials: 'MS',
+    role: 'Founder/CEO',
+    email: site.email,
+    bio: 'Mariam founded Cultivane to give fermentation teams a clear, comparable history for every batch — and leads product, customers and every pilot.',
+    focus: ['Product', 'Customers', 'Pilots'],
+  },
+  {
+    name: 'Yusuf Abdulhamid',
+    initials: 'YA',
+    role: 'Co-founder/CTO',
+    bio: 'Yusuf co-founded Cultivane and leads its technology — from historian and LIMS ingestion and the comparison engine to the cloud platform it runs on.',
+    focus: ['Data ingestion', 'Comparison engine', 'Cloud platform'],
+  },
+];
+
 export const marketingNav = [
-  { to: '/product', label: 'Product' },
-  { to: '/batch-monitoring', label: 'Batch Monitoring' },
-  { to: '/process-analytics', label: 'Process Analytics' },
+  { to: '/#problem', label: 'Problem' },
+  { to: '/product', label: 'Platform' },
   { to: '/how-it-works', label: 'How It Works' },
+  { to: '/technology', label: 'Technology' },
   { to: '/pricing', label: 'Pricing' },
-  { to: '/about', label: 'About' },
+  { to: '/about', label: 'Team' },
+  { to: '/security', label: 'Security' },
 ] as const;
 
 /** Verified Unsplash photography (industrial, laboratory and process settings). */

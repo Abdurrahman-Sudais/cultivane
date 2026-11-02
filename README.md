@@ -5,7 +5,8 @@
 Cultivane is an AI-assisted fermentation batch-monitoring platform, initially focused on nonclinical industrial enzyme production. This repository contains the marketing website and a working, interactive batch-monitoring dashboard built on a **simulated** dataset.
 
 - Domain: cultivane.site
-- Founder: Mariam Suleiman — mariam@cultivate.site
+- Founder/CEO: Mariam Suleiman — mariam@cultivate.site
+- Co-founder/CTO: Yusuf Abdulhamid
 
 ## Stack
 
@@ -22,14 +23,31 @@ npm run build      # type-check + production build to dist/
 npm run preview    # serve the production build
 ```
 
-Because this is a single-page app, configure your host to rewrite unknown paths to `index.html` (e.g. Netlify `_redirects`: `/* /index.html 200`; Vercel `rewrites`).
+`npm test` runs the Vitest unit tests (roles, assistant grounding and refusals, home content).
+
+## Deploying
+
+`npm run build` produces a static site in `dist/`. Ready-made host configs are included: `public/_redirects` + `public/_headers` (Netlify / Cloudflare Pages) and `vercel.json` (Vercel) set the SPA fallback, security headers and long-lived caching for hashed assets.
+
+Optional: copy `.env.example` to `.env.local` and set the `VITE_HUBSPOT_*` variables so early-access requests reach HubSpot. Without them the form saves enquiries in the visitor's browser and offers a pre-filled email.
+
+### Content to confirm before launch
+
+- **Founders:** Mariam Suleiman (Founder/CEO) and Yusuf Abdulhamid (Co-founder/CTO), in `FOUNDERS` (`src/config/site.ts`).
+- **Contact email:** `site.email` is `mariam@cultivate.site` while the domain is `cultivane.site` — check which is correct.
+- **Industry statistics** (`PROBLEM_STATS` in `src/pages/marketing/Home.tsx`) cite BioPlan survey coverage (GEN, BioProcess Online) and Frost & Sullivan (RCR Wireless). Check each against its source.
+- **Roadmap, pricing, FAQ, privacy notice and terms** are drafts to keep in step with what you offer.
 
 ## Routes
 
 | Path | Page |
 | --- | --- |
 | `/` | Home |
-| `/product`, `/batch-monitoring`, `/process-analytics`, `/how-it-works`, `/pricing`, `/about`, `/contact` | Marketing pages |
+| `/product`, `/batch-monitoring`, `/process-analytics`, `/how-it-works`, `/pricing` | Marketing pages |
+| `/about` | Founding team, story, mission, principles, roadmap |
+| `/contact` | Early-access form (`?plan=` preselects a plan) |
+| `/technology`, `/security` | Proposed AWS architecture; safeguards and security design |
+| `/privacy`, `/terms` | Review drafts |
 | `/batches` | Dashboard overview |
 | `/batches/list` | Searchable batch inventory |
 | `/batches/b/:batchId` | Batch detail (trends, samples, events, investigations) |
@@ -38,7 +56,8 @@ Because this is a single-page app, configure your host to rewrite unknown paths 
 | `/batches/compare?focus=ID` | Multi-batch comparison with comparability checks |
 | `/batches/investigations[/:id]` | Investigation list and workflow |
 | `/batches/data-quality` | Missing / outdated / incomplete data |
-| `/batches/settings` | Thresholds, current user, reset demo |
+| `/batches/audit` | Roles × permissions, demo people, audit log (managers) with CSV export |
+| `/batches/settings` | Thresholds (managers), current user, reset demo |
 
 ## Demonstration walkthrough
 
@@ -79,8 +98,9 @@ src/
 | "AI-generated" evidence summary | Template driven by computed statistics, clearly labelled | An LLM or analytics service, with validation |
 | Deviation screening | Rule-based: value outside the widened reference range for ≥ 1 h | Validated statistical models, tuned per process |
 | Investigations, notes, assignment, settings | Browser `localStorage` | Backend database, audit trail, user accounts |
-| Authentication / roles | "Acting as" selector only | SSO / identity provider |
-| Contact form | Validated, saved to `localStorage`, nothing is sent | Email/CRM endpoint |
+| Authentication / roles | “Demo as” switcher; every change checked against a role matrix and written to an audit log | SSO / identity provider, server-side enforcement |
+| Assistant (“Ask about this facility”) | Deterministic intent routing over the demo records; cites records; refuses causes, dosing, release and forecasts | Amazon Bedrock phrasing over retrieved records |
+| Early-access form | Saved to `localStorage` with a mailto link, or sent to HubSpot when configured | HubSpot form + updated privacy notice |
 | Notifications, CSV/historian import | Not implemented | Integration services |
 
 Photography is loaded from Unsplash; if an image fails, an inline fermenter illustration is shown instead.

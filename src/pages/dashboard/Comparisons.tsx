@@ -16,7 +16,7 @@ import { MeasurementPanel } from '@/components/dashboard/MeasurementPanel';
 export default function Comparisons() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
-  const { settings, createInvestigation, investigations } = useWorkspace();
+  const { settings, createInvestigation, investigations, can } = useWorkspace();
   const focus = batchById(params.get('focus') ?? DEMO_BATCH_ID) ?? batchById(DEMO_BATCH_ID)!;
   const defaultPhase: ProcessPhaseId = focus.status === 'completed' ? 'fed-batch' : currentPhase(focus).id;
   const [phaseId, setPhaseId] = useState<ProcessPhaseId>(defaultPhase);
@@ -59,7 +59,7 @@ export default function Comparisons() {
       phaseId: first.phaseId ?? phaseId,
       referenceBatchIds: usable.map((b) => b.id),
     });
-    navigate(`/batches/investigations/${id}`);
+    if (id) navigate(`/batches/investigations/${id}`);
   };
 
   const table = [focus, ...selectedBatches];
@@ -145,7 +145,7 @@ export default function Comparisons() {
                 <div className="font-medium">{MEASUREMENTS[primary].label} differs from {usable.length} matched runs between {first.window.startHour.toFixed(2)} h and {first.window.endHour.toFixed(2)} h ({phaseLabel(first.phaseId ?? phaseId)}).</div>
                 <div className="text-[13px] opacity-90">This is a pattern for review, not a diagnosis. Corresponding pH and temperature are shown below on the same time axis.</div>
               </div>
-              <button type="button" className="btn-primary btn-sm shrink-0" onClick={openInvestigation}>
+              <button type="button" className="btn-primary btn-sm shrink-0" onClick={openInvestigation} disabled={!can('create')} title={can('create') ? undefined : 'Your role cannot open investigations'}>
                 <ClipboardPlus className="h-3.5 w-3.5" aria-hidden /> Open investigation
               </button>
             </div>
